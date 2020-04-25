@@ -1,9 +1,17 @@
 // Requeries
 var express = require('express');
 var mongoose = require('mongoose');
+var bodyParser = require('body-parser');
 
 // Inicializar variables
 var app = express();
+
+// Body parser
+app.use(bodyParser.json());
+
+// Importar rutas
+var appRoutes = require('./src/routes/app.routes');
+var userRoutes = require('./src/routes/user.routes');
 
 // Conexión a la db
 mongoose.connection.openUri(
@@ -16,12 +24,8 @@ mongoose.connection.openUri(
 );
 
 // Rutas
-app.get('/', (req, res, next) => {
-  res.status(200).json({
-    status: 'Ok',
-    message: 'Todo bien desde ExpressJs'
-  });
-});
+app.use('/', appRoutes);
+app.use('/users', userRoutes);
 
 // Escuchar el servidor
 app.listen(3000, () => {
