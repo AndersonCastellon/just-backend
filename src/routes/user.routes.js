@@ -1,4 +1,6 @@
 var express = require('express');
+var bcrypt = require('bcryptjs');
+
 var app = express();
 var User = require('../models/user.schema');
 /**
@@ -30,7 +32,7 @@ app.post('/', (req, res) => {
   var user = new User({
     name: body.name,
     email: body.email,
-    password: body.password,
+    password: bcrypt.hashSync(body.password, 10),
     photo: body.photo,
     role: body.role
   });
@@ -44,9 +46,64 @@ app.post('/', (req, res) => {
       });
     }
 
-    res.status(200).json({
+    res.status(201).json({
       status: 'Ok',
       user: user
+    });
+  });
+});
+
+/**
+ * Update user
+ */
+app.put('/:id', (req, res) => {
+  // get id
+  var id = req.params.id;
+  // get body request
+  var body = req.body;
+
+  // find user
+  User.findById(id, (error, user) => {
+    // errors
+    if (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Server error',
+        errors: error
+      });
+    }
+
+    // if void user
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found',
+        errors: error
+      });
+    }
+
+    // user god
+    user.name = body.name;
+    user.email = body.email;
+    user.role = body.role;
+
+    user.save((error, user) => {
+      // errors
+      if (error) {
+        return res.status(400).json({
+          status: 'error',
+          message: 'Update user error',
+          errors: error
+        });
+      }
+
+      user.password = '';
+
+      // all god
+      return res.status(200).json({
+        status: 'ok',
+        user: user
+      });
     });
   });
 });
