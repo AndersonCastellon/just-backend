@@ -3,10 +3,14 @@ var bcrypt = require('bcryptjs');
 
 var app = express();
 var User = require('../models/user.schema');
+
+//jwt
+var mdAuth = require('../middleware/auth.middleware');
+
 /**
  * Get all users
  */
-app.get('/', (req, res, next) => {
+app.get('/', (req, res) => {
   User.find({}, 'name email photo role').exec((error, users) => {
     if (error) {
       return res.status(500).json({
@@ -26,7 +30,7 @@ app.get('/', (req, res, next) => {
 /**
  * Create user
  */
-app.post('/', (req, res) => {
+app.post('/', mdAuth.verifyToken, (req, res) => {
   var body = req.body;
 
   var user = new User({
@@ -46,9 +50,12 @@ app.post('/', (req, res) => {
       });
     }
 
+    user.password = '';
+
     res.status(201).json({
       status: 'Ok',
-      user: user
+      user: user,
+      auth: req.authUser
     });
   });
 });
@@ -56,7 +63,7 @@ app.post('/', (req, res) => {
 /**
  * Update user
  */
-app.put('/:id', (req, res) => {
+app.put('/:id', mdAuth.verifyToken, (req, res) => {
   // get id
   var id = req.params.id;
   // get body request
@@ -112,7 +119,7 @@ app.put('/:id', (req, res) => {
  * Delete user
  *
  */
-app.delete('/:id', (req, res) => {
+app.delete('/:id', mdAuth.verifyToken, (req, res) => {
   // get id
   var id = req.params.id;
 
