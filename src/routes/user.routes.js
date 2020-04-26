@@ -93,7 +93,7 @@ app.put('/:id', (req, res) => {
         return res.status(400).json({
           status: 'error',
           message: 'Update user error',
-          errors: error
+          errors: { message: 'Update user error' }
         });
       }
 
@@ -104,6 +104,41 @@ app.put('/:id', (req, res) => {
         status: 'ok',
         user: user
       });
+    });
+  });
+});
+
+/**
+ * Delete user
+ *
+ */
+app.delete('/:id', (req, res) => {
+  // get id
+  var id = req.params.id;
+
+  // Detele user
+  User.findByIdAndRemove(id, (error, user) => {
+    // errors
+    if (error) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Delete user error',
+        errors: error
+      });
+    }
+
+    // user not found
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found',
+        errors: { message: 'User not found' }
+      });
+    }
+
+    return res.status(200).json({
+      status: 'ok',
+      user: user
     });
   });
 });
