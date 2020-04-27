@@ -21,5 +21,4 @@ var userSchema = new Schema({
 userSchema.plugin(uniqueValidator, { message: '{PATH} must be unique' });
 
 // Exportar el Schema para que pueda ser utilizado por express
-
 module.exports = mongoose.model('User', userSchema);
