@@ -10,9 +10,9 @@ var app = express();
 app.use(bodyParser.json());
 
 // Importar rutas
-var appRoutes = require('./src/routes/app.routes');
-var userRoutes = require('./src/routes/user.routes');
-var loginRoutes = require('./src/routes/login.routes');
+var appRoutes = require('./routes/app.routes');
+var userRoutes = require('./routes/user.routes');
+var loginRoutes = require('./routes/login.routes');
 
 // Conexión a la db
 mongoose.connection.openUri(
