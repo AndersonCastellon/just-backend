@@ -14,6 +14,7 @@ var appRoutes = require('./routes/app.routes');
 var userRoutes = require('./routes/user.routes');
 var loginRoutes = require('./routes/login.routes');
 var hospitalRoutes = require('./routes/hospital.routes');
+var doctorRoutes = require('./routes/doctor.routes');
 
 // Conexión a la db
 mongoose.connection.openUri(
@@ -30,6 +31,7 @@ app.use('/', appRoutes);
 app.use('/login', loginRoutes);
 app.use('/users', userRoutes);
 app.use('/hospitals', hospitalRoutes);
+app.use('/doctors', doctorRoutes);
 
 // Escuchar el servidor
 app.listen(3000, () => {
