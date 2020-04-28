@@ -11,20 +11,32 @@ var mdAuth = require('../middleware/auth.middleware');
  * Get all users
  */
 app.get('/', (req, res) => {
-  User.find({}, 'name email photo role').exec((error, users) => {
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
-      });
-    }
+  var limit = req.query.limit || 0;
+  limit = Number(limit);
 
-    res.status(200).json({
-      status: 'Ok',
-      users: users
+  var from = req.query.from || 0;
+  from = Number(from);
+
+  User.find({}, 'name email photo role')
+    .skip(from)
+    .limit(limit)
+    .exec((error, users) => {
+      if (error) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Server error',
+          errors: error
+        });
+      }
+
+      User.count({}, (error, count) => {
+        res.status(200).json({
+          status: 'Ok',
+          count: count,
+          users: users
+        });
+      });
     });
-  });
 });
 
 /**

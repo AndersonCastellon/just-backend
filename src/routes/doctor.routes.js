@@ -8,31 +8,45 @@ var Doctor = require('../models/doctor.schema');
  * Get all doctors
  */
 app.get('/', (req, res) => {
-  Doctor.find({}, (error, doctors) => {
-    // errors
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
-      });
-    }
+  var limit = req.query.limit || 0;
+  limit = Number(limit);
 
-    // empty doctors
-    if (doctors.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Doctors not exist',
-        errors: { message: 'Doctors not exist' }
-      });
-    }
+  var from = req.query.from || 0;
+  from = Number(from);
 
-    // all ok
-    return res.status(200).json({
-      status: 'ok',
-      doctors: doctors
+  Doctor.find({})
+    .populate('user', 'name email')
+    .populate('hospital')
+    .skip(from)
+    .limit(limit)
+    .exec((error, doctors) => {
+      // errors
+      if (error) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Server error',
+          errors: error
+        });
+      }
+
+      // empty doctors
+      if (doctors.length === 0) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Doctors not exist',
+          errors: { message: 'Doctors not exist' }
+        });
+      }
+
+      // all ok
+      Doctor.count({}, (error, count) => {
+        return res.status(200).json({
+          status: 'ok',
+          count: count,
+          doctors: doctors
+        });
+      });
     });
-  });
 });
 
 /**

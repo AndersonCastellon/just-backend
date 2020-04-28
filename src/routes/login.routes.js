@@ -49,7 +49,7 @@ app.post('/', (req, res) => {
 
     // generate jwt
     var token = jwt.sign({ user: user }, config.secretKey, {
-      expiresIn: 14000
+      expiresIn: 31536000
     });
 
     res.status(200).json({

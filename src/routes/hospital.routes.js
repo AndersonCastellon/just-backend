@@ -8,31 +8,44 @@ var mdAuth = require('../middleware/auth.middleware');
  * Get all hospitals
  */
 app.get('/', (req, res) => {
-  Hospital.find({}, (error, hospitals) => {
-    // errors
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
-      });
-    }
+  var limit = req.query.limit || 0;
+  limit = Number(limit);
 
-    // empty hospitals
-    if (hospitals.length === 0) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Hospitals not found',
-        errros: { message: 'Hospitals not found' }
-      });
-    }
+  var from = req.query.from || 0;
+  from = Number(from);
 
-    // all ok
-    return res.status(200).json({
-      status: 'ok',
-      hospitals: hospitals
+  Hospital.find({})
+    .populate('user', 'name email')
+    .skip(from)
+    .limit(limit)
+    .exec((error, hospitals) => {
+      // errors
+      if (error) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Server error',
+          errors: error
+        });
+      }
+
+      // empty hospitals
+      if (hospitals.length === 0) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Hospitals not found',
+          errros: { message: 'Hospitals not found' }
+        });
+      }
+
+      // all ok
+      Hospital.count({}, (error, count) => {
+        return res.status(200).json({
+          status: 'ok',
+          count: count,
+          hospitals: hospitals
+        });
+      });
     });
-  });
 });
 
 /**
