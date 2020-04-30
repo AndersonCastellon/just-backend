@@ -1,6 +1,7 @@
 // Requeries
 var express = require('express');
 var bodyParser = require('body-parser');
+var fileUpload = require('express-fileupload');
 
 // Inicializar variables
 var app = express();
@@ -8,20 +9,24 @@ var app = express();
 // Body parser
 app.use(bodyParser.json());
 
+app.use(fileUpload());
+
 // Importar rutas
-var appRoutes = require('./routes/app.routes');
-var userRoutes = require('./routes/user.routes');
-var loginRoutes = require('./routes/login.routes');
-var hospitalRoutes = require('./routes/hospital.routes');
-var doctorRoutes = require('./routes/doctor.routes');
-var searchRoutes = require('./routes/search.routes');
+var appRoute = require('./routes/app.routes');
+var user = require('./routes/user.routes');
+var login = require('./routes/login.routes');
+var hospital = require('./routes/hospital.routes');
+var doctor = require('./routes/doctor.routes');
+var search = require('./routes/search.routes');
+var upload = require('./routes/upload.routes');
 
 // Rutas
-app.use('/', appRoutes);
-app.use('/login', loginRoutes);
-app.use('/users', userRoutes);
-app.use('/hospitals', hospitalRoutes);
-app.use('/doctors', doctorRoutes);
-app.use('/search', searchRoutes);
+app.use('/', appRoute);
+app.use('/login', login);
+app.use('/users', user);
+app.use('/hospitals', hospital);
+app.use('/doctors', doctor);
+app.use('/search', search);
+app.use('/upload', upload);
 
 module.exports = app;
