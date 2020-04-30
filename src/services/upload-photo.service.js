@@ -7,7 +7,7 @@ var fs = require('fs');
 function updatePhotoUser(id, file, ext) {
   return new Promise((resolve, reject) => {
     // Generate new filename
-    var filename = `${id}-${new Date().getMilliseconds()}.${ext}`;
+    var filename = `${id}-${new Date().getTime()}.${ext}`;
 
     // Move dile to path
     var path = `src/uploads/users/`;
