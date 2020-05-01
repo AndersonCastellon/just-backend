@@ -1,2 +1,4 @@
 node_modules/
-src/uploads/
+src/uploads/users/
+src/uploads/doctors/
+src/uploads/hospitals/

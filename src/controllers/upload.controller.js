@@ -45,6 +45,26 @@ function uploadPhoto(req, res) {
           });
         });
       break;
+    case 'hospitals':
+      uploadService
+        .updatePhotoHospital(id, file.photo, extFile)
+        .then((updateHospital) => {
+          res.status(200).json({
+            status: 'ok',
+            hospital: updateHospital
+          });
+        });
+      break;
+    case 'doctors':
+      uploadService
+        .updatePhotoDoctor(id, file.photo, extFile)
+        .then((updateDoctor) => {
+          res.status(200).json({
+            status: 'ok',
+            doctor: updateDoctor
+          });
+        });
+      break;
   }
 }
 
