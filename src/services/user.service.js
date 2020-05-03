@@ -1,7 +1,43 @@
-var User = require('../models/user.schema');
+const User = require('../models/user.schema');
 
-var jwt = require('jsonwebtoken');
-var SECRET_KEY = require('../config/config').secretKey;
+const jwt = require('jsonwebtoken');
+const SECRET_KEY = require('../config/config').secretKey;
+
+function getUsers(from, limit) {
+  return new Promise((resolve, reject) => {
+    User.find({}, 'name email photo role google')
+      .skip(from)
+      .limit(limit)
+      .exec((error, users) => {
+        if (error) {
+          reject(error);
+        }
+
+        User.count({}, (error, count) => {
+          if (error) reject(error);
+          resolve({ count, users });
+        });
+      });
+  });
+}
+
+function getUser(id) {
+  return new Promise((resolve, reject) => {
+    User.findById(id, 'name email photo role google', (error, user) => {
+      // errors
+      if (error) {
+        reject({ code: 500, message: 'Server error' });
+      }
+
+      if (!user) {
+        reject({ code: 404, message: 'User not exist' });
+      }
+
+      // all ok
+      resolve(user);
+    });
+  });
+}
 
 function createWithGoogle(body) {
   return new Promise((resolve, reject) => {
@@ -51,5 +87,7 @@ function createWithGoogle(body) {
 }
 
 module.exports = {
+  getUsers,
+  getUser,
   createWithGoogle
 };

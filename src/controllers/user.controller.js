@@ -1,6 +1,8 @@
 var bcrypt = require('bcryptjs');
 var User = require('../models/user.schema');
 
+const userService = require('../services/user.service');
+
 /**
  * Get all users
  */
@@ -11,24 +13,19 @@ function getUsers(req, res) {
   var from = req.query.from || 0;
   from = Number(from);
 
-  User.find({}, 'name email photo role google')
-    .skip(from)
-    .limit(limit)
-    .exec((error, users) => {
-      if (error) {
-        return res.status(500).json({
-          status: 'error',
-          message: 'Server error',
-          errors: error
-        });
-      }
-
-      User.count({}, (error, count) => {
-        res.status(200).json({
-          status: 'Ok',
-          count: count,
-          users: users
-        });
+  userService
+    .getUsers(from, limit)
+    .then((data) => {
+      return res.status(200).json({
+        status: 'Ok',
+        data
+      });
+    })
+    .catch((error) => {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Server error',
+        errors: error
       });
     });
 }
@@ -39,30 +36,20 @@ function getUsers(req, res) {
 function getUser(req, res) {
   var id = req.params.id;
 
-  User.findById(id, 'name email photo role', (error, user) => {
-    // errors
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
+  userService
+    .getUser(id)
+    .then((data) => {
+      return res.status(200).json({
+        status: 'ok',
+        data
       });
-    }
-
-    if (!user) {
-      return res.status(404).json({
+    })
+    .catch((error) => {
+      return res.status(error.code).json({
         status: 'error',
-        message: 'User not exist',
-        errors: { message: 'User not exist' }
+        errors: error.message
       });
-    }
-
-    // all ok
-    return res.status(200).json({
-      status: 'ok',
-      user: user
     });
-  });
 }
 
 /**
