@@ -1,12 +1,14 @@
-var mongoose = require('mongoose');
-var app = require('./app');
+const mongoose = require('mongoose');
+const app = require('./app');
 
-var PORT = 3000;
+const PORT = 3000;
+const DB = 'funding';
+const URI = `mongodb://localhost:27017/${DB}`;
 
 mongoose.Promise = global.Promise;
 
 mongoose
-  .connect('mongodb://localhost:27017/hospitalDB', { useNewUrlParser: true })
+  .connect(URI, { useNewUrlParser: true })
   .then(() => {
     console.log('Base de datos: \x1b[32m%s\x1b[0m', 'Online');
 

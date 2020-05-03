@@ -1,12 +1,12 @@
-var loginService = require('../services/login.service');
-var userService = require('../services/user.service');
+const loginService = require('../services/login.service');
+const userService = require('../services/user.service');
 
 /**
  * Login
  */
 function loginWithEmail(req, res) {
   //get body
-  var body = req.body;
+  const body = req.body;
 
   loginService
     .loginWithEmail(body)
@@ -27,7 +27,7 @@ function loginWithEmail(req, res) {
 }
 
 function loginWithGoogle(req, res) {
-  var gToken = req.body.gToken;
+  const gToken = req.body.gToken;
 
   loginService
     .loginWithGoogle(gToken)
