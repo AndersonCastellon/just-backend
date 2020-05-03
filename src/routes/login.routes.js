@@ -6,6 +6,6 @@ var loginController = require('../controllers/login.controller');
 /**
  * Login
  */
-app.route('/').post(loginController.login);
-
+app.route('/').post(loginController.loginWithEmail);
+app.route('/google').post(loginController.loginWithGoogle);
 module.exports = app;

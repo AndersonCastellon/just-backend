@@ -1,60 +1,54 @@
-var jwt = require('jsonwebtoken');
-var User = require('../models/user.schema');
-var bcript = require('bcryptjs');
-var config = require('../config/config');
+var loginService = require('../services/login.service');
+var userService = require('../services/user.service');
 
 /**
  * Login
  */
-function login(req, res) {
+function loginWithEmail(req, res) {
   //get body
   var body = req.body;
 
-  // find user
-  User.findOne({ email: body.email }, (error, user) => {
-    //errors
-    if (error) {
-      return res.status(500).json({
+  loginService
+    .loginWithEmail(body)
+    .then((data) => {
+      return res.status(200).json({
+        status: 'ok',
+        user: data.user,
+        token: data.token
+      });
+    })
+    .catch((error) => {
+      return res.status(error.code).json({
         status: 'error',
-        message: 'Server error',
+        message: error.message || 'Server error',
         errors: error
       });
-    }
-
-    // user not found
-    if (!user) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Bad credentials - email',
-        errors: error
-      });
-    }
-
-    // password not match
-    if (!bcript.compareSync(body.password, user.password)) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Bad credentials - password',
-        errors: error
-      });
-    }
-
-    // all god
-    user.password = '';
-
-    // generate jwt
-    var token = jwt.sign({ user: user }, config.secretKey, {
-      expiresIn: 31536000
     });
+}
 
-    res.status(200).json({
-      status: 'ok',
-      user: user,
-      token: token
+function loginWithGoogle(req, res) {
+  var gToken = req.body.gToken;
+
+  loginService
+    .loginWithGoogle(gToken)
+    .then((body) => {
+      userService.createWithGoogle(body).then((data) => {
+        return res.status(200).json({
+          status: 'ok',
+          user: data.user,
+          token: data.token
+        });
+      });
+    })
+    .catch((error) => {
+      return res.status(403).json({
+        status: 'error',
+        message: 'Invalid gToken'
+      });
     });
-  });
 }
 
 module.exports = {
-  login
+  loginWithEmail,
+  loginWithGoogle
 };

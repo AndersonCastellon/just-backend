@@ -11,7 +11,7 @@ function getUsers(req, res) {
   var from = req.query.from || 0;
   from = Number(from);
 
-  User.find({}, 'name email photo role')
+  User.find({}, 'name email photo role google')
     .skip(from)
     .limit(limit)
     .exec((error, users) => {
