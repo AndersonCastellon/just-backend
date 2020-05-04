@@ -22,10 +22,8 @@ function getUsers(req, res) {
       });
     })
     .catch((error) => {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
+      return res.status(error.code).json({
+        error
       });
     });
 }

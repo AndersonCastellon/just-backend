@@ -1,4 +1,6 @@
 const User = require('../models/user.schema');
+const handler = require('../handlers/responses');
+const messages = require('../config/messages');
 
 const jwt = require('jsonwebtoken');
 const SECRET_KEY = require('../config/config').secretKey;
@@ -10,11 +12,16 @@ function getUsers(from, limit) {
       .limit(limit)
       .exec((error, users) => {
         if (error) {
-          reject(error);
+          reject(handler.errorResponse(500, messages.SERVER_ERROR, error));
+        }
+
+        if (users.length < 1) {
+          reject(handler.errorResponse(404, messages.USERS_NOT_FOUND));
         }
 
         User.count({}, (error, count) => {
-          if (error) reject(error);
+          if (error)
+            reject(handler.errorResponse(400, messages.ERROR_COUNT_USERS));
           resolve({ count, users });
         });
       });

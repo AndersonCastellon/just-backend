@@ -1,10 +1,10 @@
-var express = require('express');
-var app = express();
+const express = require('express');
+const app = express();
 // middlewares
-var mdAuth = require('../middleware/auth.middleware');
+const mdAuth = require('../middleware/auth.middleware');
 
 // controller
-var userController = require('../controllers/user.controller');
+const userController = require('../controllers/user.controller');
 app
   .route('/')
   .get(userController.getUsers)
