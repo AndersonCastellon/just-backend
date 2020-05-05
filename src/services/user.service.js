@@ -1,4 +1,5 @@
 const User = require('../models/user.schema');
+const bcrypt = require('bcryptjs');
 const handler = require('../handlers/responses');
 const messages = require('../config/messages');
 
@@ -33,15 +34,88 @@ function getUser(id) {
     User.findById(id, 'name email photo role google', (error, user) => {
       // errors
       if (error) {
-        reject({ code: 500, message: 'Server error' });
+        reject(handler.errorResponse(500, 'Server error', errors));
+      } else if (!user) {
+        reject(handler.errorResponse(404, 'User no exist'));
+      } else {
+        // all ok
+        resolve(user);
+      }
+    });
+  });
+}
+
+function create(body) {
+  return new Promise((resolve, reject) => {
+    const user = new User({
+      name: body.name,
+      email: body.email,
+      password: bcrypt.hashSync(body.password, 10),
+      photo: body.photo,
+      role: body.role
+    });
+
+    user.save((error, user) => {
+      if (error) {
+        reject(
+          handler.errorResponse(400, messages.USER_VALIDATION_FAILED, error)
+        );
+      } else {
+        user.password = undefined;
+        resolve(handler.entityResponse(201, user));
+      }
+    });
+  });
+}
+
+function update(id, body) {
+  return new Promise((resolve, reject) => {
+    // find user
+    User.findById(id, (error, user) => {
+      // errors
+      if (error) {
+        reject(handler.errorResponse(500, messages.SERVER_ERROR, error));
+      } else if (!user) {
+        reject(handler.errorResponse(404, messages.USER_NOT_FOUND));
       }
 
+      // user god
+      user.name = body.name;
+      user.email = body.email;
+      user.role = body.role;
+
+      user.save((error, user) => {
+        // errors
+        if (error) {
+          reject(
+            handler.errorResponse(400, messages.USER_UPDATE_FAILED, error)
+          );
+        } else if (!user) {
+          reject(handler.errorResponse(404, messages.USER_NOT_FOUND));
+        } else {
+          user.password = undefined;
+          resolve(handler.entityResponse(200, user));
+        }
+      });
+    });
+  });
+}
+
+function remove(id) {
+  return new Promise((resolve, reject) => {
+    // Detele user
+    User.findByIdAndRemove(id, (error, user) => {
+      // errors
+      if (error) {
+        reject(handler.errorResponse(500, messages.SERVER_ERROR, error));
+      }
+
+      // user not found
       if (!user) {
-        reject({ code: 404, message: 'User not exist' });
+        reject(handler.errorResponse(404, messages.USER_NOT_FOUND));
       }
 
-      // all ok
-      resolve(user);
+      resolve(handler.entityResponse(200, user));
     });
   });
 }
@@ -96,5 +170,8 @@ function createWithGoogle(body) {
 module.exports = {
   getUsers,
   getUser,
+  create,
+  update,
+  remove,
   createWithGoogle
 };

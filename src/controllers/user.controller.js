@@ -1,4 +1,3 @@
-var bcrypt = require('bcryptjs');
 var User = require('../models/user.schema');
 
 const userService = require('../services/user.service');
@@ -54,33 +53,15 @@ function getUser(req, res) {
  * Create user
  */
 function create(req, res) {
-  var body = req.body;
-
-  var user = new User({
-    name: body.name,
-    email: body.email,
-    password: bcrypt.hashSync(body.password, 10),
-    photo: body.photo,
-    role: body.role
-  });
-
-  user.save((error, user) => {
-    if (error) {
-      return res.status(400).json({
-        status: 'error',
-        message: 'Create user error',
-        errors: error
-      });
-    }
-
-    user.password = '';
-
-    res.status(201).json({
-      status: 'Ok',
-      user: user,
-      auth: req.authUser
+  const body = req.body;
+  userService
+    .create(body)
+    .then((data) => {
+      return res.status(data.code).json({ data });
+    })
+    .catch((error) => {
+      return res.status(error.code).json({ error });
     });
-  });
 }
 
 /**
@@ -92,50 +73,14 @@ function update(req, res) {
   // get body request
   var body = req.body;
 
-  // find user
-  User.findById(id, (error, user) => {
-    // errors
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Server error',
-        errors: error
-      });
-    }
-
-    // if void user
-    if (!user) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'User not found',
-        errors: error
-      });
-    }
-
-    // user god
-    user.name = body.name;
-    user.email = body.email;
-    user.role = body.role;
-
-    user.save((error, user) => {
-      // errors
-      if (error) {
-        return res.status(400).json({
-          status: 'error',
-          message: 'Update user error',
-          errors: { message: 'Update user error' }
-        });
-      }
-
-      user.password = '';
-
-      // all god
-      return res.status(200).json({
-        status: 'ok',
-        user: user
-      });
+  userService
+    .update(id, body)
+    .then((data) => {
+      return res.status(data.code).json({ data });
+    })
+    .catch((error) => {
+      return res.status(error.code).json({ error });
     });
-  });
 }
 
 /**
@@ -145,31 +90,10 @@ function remove(req, res) {
   // get id
   var id = req.params.id;
 
-  // Detele user
-  User.findByIdAndRemove(id, (error, user) => {
-    // errors
-    if (error) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Delete user error',
-        errors: error
-      });
-    }
-
-    // user not found
-    if (!user) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'User not found',
-        errors: { message: 'User not found' }
-      });
-    }
-
-    return res.status(200).json({
-      status: 'ok',
-      user: user
-    });
-  });
+  userService
+    .remove(id)
+    .then((data) => res.status(data.code).json({ data }))
+    .catch((error) => res.status(error.code).json({ error }));
 }
 
 module.exports = {

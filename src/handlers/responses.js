@@ -10,6 +10,13 @@ function errorResponse(code, message, errors) {
   };
 }
 
-function successResponse(code) {}
+function entityResponse(code, entity) {
+  return {
+    code: code,
+    [entity.type]: entity
+  };
+}
 
-module.exports = { errorResponse };
+function arrayResponse(code, array) {}
+
+module.exports = { errorResponse, entityResponse, arrayResponse };

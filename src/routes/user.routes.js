@@ -5,15 +5,12 @@ const mdAuth = require('../middleware/auth.middleware');
 
 // controller
 const userController = require('../controllers/user.controller');
-app
-  .route('/')
-  .get(userController.getUsers)
-  .post(mdAuth.verifyToken, userController.create);
+app.route('/').get(userController.getUsers).post(userController.create);
 
 app
   .route('/:id')
-  .get(mdAuth.verifyToken, userController.getUser)
-  .put(mdAuth.verifyToken, userController.update)
-  .delete(mdAuth.verifyToken, userController.remove);
+  .get(userController.getUser)
+  .put(userController.update)
+  .delete(userController.remove);
 
 module.exports = app;

@@ -12,17 +12,13 @@ function loginWithEmail(req, res) {
     .loginWithEmail(body)
     .then((data) => {
       return res.status(200).json({
-        status: 'ok',
+        code: 200,
         user: data.user,
         token: data.token
       });
     })
     .catch((error) => {
-      return res.status(error.code).json({
-        status: 'error',
-        message: error.message || 'Server error',
-        errors: error
-      });
+      return res.status(error.code).json({ error });
     });
 }
 

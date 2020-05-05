@@ -4,6 +4,9 @@ const bcript = require('bcryptjs');
 const SECRET_KEY = require('../config/config').SECRET_KEY;
 const CLIENT_ID = require('../config/config').CLIENT_ID;
 
+const handler = require('../handlers/responses');
+const messages = require('../config/messages');
+
 // Google
 const { OAuth2Client } = require('google-auth-library');
 const client = new OAuth2Client(CLIENT_ID);
@@ -12,27 +15,22 @@ function loginWithEmail(body) {
   return new Promise((resolve, reject) => {
     User.findOne({ email: body.email }, (error, user) => {
       if (error) {
-        reject({ code: 500, error });
+        reject(handler.errorResponse(500, messages.SERVER_ERROR, error));
+      } else if (!user) {
+        reject(handler.errorResponse(400, messages.BAD_CREDENTIALS));
+      } else if (!bcript.compareSync(body.password, user.password)) {
+        reject(handler.errorResponse(400, messages.BAD_CREDENTIALS));
+      } else {
+        // all god
+        user.password = undefined;
+
+        // generate jwt
+        const token = jwt.sign({ user: user }, SECRET_KEY, {
+          expiresIn: 31536000
+        });
+
+        resolve({ user, token });
       }
-
-      if (!user) {
-        reject({ code: 400, message: 'Bad credentials - email' });
-      }
-
-      // password not match
-      if (!bcript.compareSync(body.password, user.password)) {
-        reject({ code: 400, message: 'Bad credentials - password' });
-      }
-
-      // all god
-      user.password = '';
-
-      // generate jwt
-      const token = jwt.sign({ user: user }, SECRET_KEY, {
-        expiresIn: 31536000
-      });
-
-      resolve({ user, token });
     });
   });
 }
