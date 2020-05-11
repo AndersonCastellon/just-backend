@@ -1,6 +1,4 @@
-var User = require('../models/user.schema');
-var Hospital = require('../models/hospital.schema');
-var Doctor = require('../models/doctor.schema');
+var User = require('../models/User/user.schema');
 
 /**
  * Search all

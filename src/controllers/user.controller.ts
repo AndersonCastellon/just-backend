@@ -1,19 +1,16 @@
-var User = require('../models/user.schema');
-
-const userService = require('../services/user.service');
-
+import * as us from '../services/user.service';
+import { Request, Response } from 'express';
 /**
  * Get all users
  */
-function getUsers(req, res) {
+export const getUsers = (req: Request, res: Response) => {
   var limit = req.query.limit || 0;
   limit = Number(limit);
 
   var from = req.query.from || 0;
   from = Number(from);
 
-  userService
-    .getUsers(from, limit)
+  us.getUsers(from, limit)
     .then((data) => {
       return res.status(200).json({
         status: 'Ok',
@@ -25,16 +22,15 @@ function getUsers(req, res) {
         error
       });
     });
-}
+};
 
 /**
  * Get user
  */
-function getUser(req, res) {
+export const getUser = (req: Request, res: Response) => {
   var id = req.params.id;
 
-  userService
-    .getUser(id)
+  us.getUser(id)
     .then((data) => {
       return res.status(200).json({
         status: 'ok',
@@ -47,59 +43,34 @@ function getUser(req, res) {
         errors: error.message
       });
     });
-}
-
-/**
- * Create user
- */
-function create(req, res) {
-  const body = req.body;
-  userService
-    .create(body)
-    .then((data) => {
-      return res.status(data.code).json({ data });
-    })
-    .catch((error) => {
-      return res.status(error.code).json({ error });
-    });
-}
+};
 
 /**
  * Update user
  */
-function update(req, res) {
+export const update = (req: Request, res: Response) => {
   // get id
   var id = req.params.id;
   // get body request
   var body = req.body;
 
-  userService
-    .update(id, body)
-    .then((data) => {
+  us.update(id, body)
+    .then((data: any) => {
       return res.status(data.code).json({ data });
     })
     .catch((error) => {
       return res.status(error.code).json({ error });
     });
-}
+};
 
 /**
  * Delete user
  */
-function remove(req, res) {
+export const remove = (req: Request, res: Response) => {
   // get id
   var id = req.params.id;
 
-  userService
-    .remove(id)
-    .then((data) => res.status(data.code).json({ data }))
+  us.remove(id)
+    .then((data: any) => res.status(data.code).json({ data }))
     .catch((error) => res.status(error.code).json({ error }));
-}
-
-module.exports = {
-  getUser,
-  getUsers,
-  create,
-  update,
-  remove
 };
