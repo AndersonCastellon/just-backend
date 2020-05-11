@@ -10,10 +10,12 @@ export const errorResponse = (code: number, message: string, errors?: any) => {
   };
 };
 
-export const entityResponse = (code: number, entity: any) => {
+export const entityResponse = (entity: any, code?: number) => {
   return {
-    code: code,
-    [entity.type]: entity
+    code: code || 200,
+    data: {
+      [entity.type]: entity
+    }
   };
 };
 

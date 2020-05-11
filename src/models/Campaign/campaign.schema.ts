@@ -13,11 +13,11 @@ const campaignSchema = new Schema(
     currency: { type: String },
     billing_statement: { type: String },
     state: { type: String },
-    category: { type: Schema.Types.ObjectId, required: true },
-    user: { type: Schema.Types.ObjectId, required: true },
-    basics: { type: Schema.Types.ObjectId, required: true },
-    content: { type: Schema.Types.ObjectId, required: true },
-    contact: { type: Schema.Types.ObjectId, required: true }
+    category: { type: Schema.Types.ObjectId },
+    user: { type: Schema.Types.ObjectId },
+    basics: { type: Schema.Types.ObjectId },
+    content: { type: Schema.Types.ObjectId },
+    contact: { type: Schema.Types.ObjectId }
   },
   { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } }
 );

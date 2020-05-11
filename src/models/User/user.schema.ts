@@ -21,10 +21,16 @@ export interface IUser extends Document {
   verifyPassword(password: string): Promise<boolean>;
 }
 
-// Roles permitidos
+// Alloweds roles
 const roles = {
   values: ['ADMIN_ROLE', 'USER_ROLE'],
-  message: '{VALUE} not an allowed role'
+  message: '{VALUE} is not an allowed role'
+};
+
+// Alloweds categories
+const categories = {
+  values: ['natural', 'legal'],
+  message: '{VALUE} is not allowed category'
 };
 
 // Schema de users, campos, requerimientos y validaciones de los campos en la db
@@ -39,7 +45,7 @@ const userSchema = new Schema(
     last_login: { type: Date, required: false },
     role: { type: String, required: true, default: 'USER_ROLE', enum: roles },
     type: { type: String, default: 'user' },
-    category: { type: String, default: 'individual' },
+    category: { type: String, default: 'natural', enum: categories },
     google: { type: Boolean, default: false },
     profile: { type: Schema.Types.ObjectId, ref: 'Profile', required: false },
     bank_information: {

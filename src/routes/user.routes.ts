@@ -6,10 +6,6 @@ import { verifyToken } from '../middleware/auth.middleware';
 // controller
 import * as userController from '../controllers/user.controller';
 
-router
-  .route('/:id')
-  .get(verifyToken, userController.getUser)
-  .put(verifyToken, userController.update)
-  .delete(verifyToken, userController.remove);
+router.route('/:id').get(verifyToken, userController.getUser);
 
 export default router;
